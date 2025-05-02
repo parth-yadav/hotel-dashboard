@@ -30,7 +30,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Separator } from "@/components/ui/separator";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsContent } from "@/components/ui/tabs";
 import {
   Select,
   SelectContent,
@@ -42,17 +42,24 @@ import { cn } from "@/lib/utils";
 import bookings from "@/constants/Bookings";
 
 // Status badge component
-function StatusBadge({ status }: { status: string }) {
-  const statusConfig = {
-    confirmed: { variant: "success", label: "Confirmed" },
-    pending: { variant: "warning", label: "Pending" },
-    cancelled: { variant: "destructive", label: "Cancelled" },
-  } as const;
 
-  const config = statusConfig[status as keyof typeof statusConfig];
+
+
+// Define the corresponding badge variant types (based on your UI library)
+// type BadgeVariant = "success" | "warning" | "destructive";
+type BookingStatus = "confirmed" | "pending" | "cancelled";
+
+function StatusBadge({ status }: { status: BookingStatus }) {
+  const statusConfig = {
+    confirmed: { variant: "default" as const, label: "Confirmed" },
+    pending: { variant: "outline" as const, label: "Pending" },
+    cancelled: { variant: "destructive" as const, label: "Cancelled" },
+  };
+
+  const config = statusConfig[status];
 
   return (
-    <Badge variant={config.variant as any} className="capitalize">
+    <Badge variant={config.variant} className="capitalize">
       {config.label}
     </Badge>
   );
@@ -218,7 +225,11 @@ export default function BookingDashboard() {
                           </p>
                         </div>
                       </div>
-                      <StatusBadge status={booking.status} />
+                      <StatusBadge
+                        status={
+                          booking.status as BookingStatus // ⚠️ Only safe if you're sure it's valid
+                        }
+                      />
                     </CardHeader>
                     <CardContent className="p-4 pt-2 grid gap-3">
                       <div className="grid grid-cols-2 gap-2 text-sm">
